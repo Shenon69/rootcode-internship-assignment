@@ -1,6 +1,6 @@
 # RootMedia Project
 
-Welcome to the **RootMedia** project! This README provides instructions to build, run, and manage the project using the provided `Makefile`.
+This README provides instructions to build, run, and manage the project using the provided `Makefile`.
 
 ## Prerequisites
 
@@ -13,8 +13,8 @@ Ensure you have the following installed on your system:
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/rootmedia.git
-cd rootmedia
+git clone https://github.com/Shenon69/rootcode-internship-assignment.git
+cd rootcode-internship-assignment
 ```
 
 ## Makefile Commands
