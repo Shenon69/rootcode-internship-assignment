@@ -15,6 +15,7 @@ export default function Posts() {
   const fetchPosts = async () => {
     try {
       const posts = await getAllPosts();
+      console.log("posts:", posts);
       setPosts(posts);
     } catch (e) {
       console.error("Error fetching posts:", e);
@@ -24,7 +25,7 @@ export default function Posts() {
   return (
     <div className="flex flex-col gap-2 lg:gap-4 justify-center items-center">
       {posts.map((post) => (
-        <Post key={post.id} title={post.title} body={post.body} />
+        <Post key={post.id} title={post.title} body={post.body} id={post.id} />
       ))}
     </div>
   );

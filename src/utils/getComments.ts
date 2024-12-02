@@ -1,12 +1,12 @@
 import axios from "axios";
-import { IPost } from "@/types/post";
+import { IComment } from "@/types/comment";
 
 const BASE_URL = process.env.NEXT_PUBLIC_AXIOS_BASE_URL!;
 axios.defaults.baseURL = BASE_URL;
 
-export const getAllPosts = async (): Promise<IPost[]> => {
+export const getComments = async (id: number): Promise<IComment[]> => {
   try {
-    const response = await axios.get("/posts");
+    const response = await axios.get(`/posts/${id}/comments`);
     const apiData = response.data;
 
     return apiData;
