@@ -4,7 +4,8 @@ import { IComment } from "@/types/comment";
 import { getComments } from "@/utils/getComments";
 import { MessageCircleMore } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+import { addComment } from "@/utils/addComment";
+import { updateComment } from "@/utils/updateComment";
 
 export default function Comments({ pid }: { pid: number }) {
   const [comments, setComments] = useState<IComment[]>([]);
@@ -36,8 +37,7 @@ export default function Comments({ pid }: { pid: number }) {
   const handleAddComment = async () => {
     if (newComment.trim()) {
       const tempId = Date.now();
-      const newCommentData: IComment = {
-        id: tempId,
+      const newCommentData: Omit<IComment, "id"> = {
         postId: pid,
         name: "New User",
         body: newComment,
@@ -45,20 +45,21 @@ export default function Comments({ pid }: { pid: number }) {
       };
 
       try {
-        setComments([...comments, newCommentData]);
+        setComments([...comments, { id: tempId, ...newCommentData }]);
 
-        const response = await axios.post("https://jsonplaceholder.typicode.com/comments", {
-          postId: pid,
-          name: newCommentData.name,
-          body: newCommentData.body,
-          email: newCommentData.email,
-        });
+        const createdComment = await addComment(newCommentData);
 
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === tempId ? { ...comment, id: response.data.id } : comment
-          )
-        );
+        if (createdComment) {
+          setComments((prevComments) =>
+            prevComments.map((comment) =>
+              comment.id === tempId ? createdComment : comment
+            )
+          );
+        } else {
+          setComments((prevComments) =>
+            prevComments.filter((comment) => comment.id !== tempId)
+          );
+        }
 
         setNewComment("");
       } catch (e) {
@@ -86,7 +87,20 @@ export default function Comments({ pid }: { pid: number }) {
           )
         );
 
-        await axios.put(`https://jsonplaceholder.typicode.com/comments/${editingComment.id}`, updatedComment);
+        const serverUpdatedComment = await updateComment(
+          editingComment.id,
+          { body: editedCommentText }
+        );
+
+        if (serverUpdatedComment) {
+          setComments((prevComments) =>
+            prevComments.map((comment) =>
+              comment.id === editingComment.id ? serverUpdatedComment : comment
+            )
+          );
+        } else {
+          console.warn("Update failed on the server, keeping optimistic changes.");
+        }
 
         setEditingComment(null);
         setEditedCommentText("");
@@ -119,14 +133,16 @@ export default function Comments({ pid }: { pid: number }) {
             <p className="text-gray-900">No comments available.</p>
           ) : (
             comments.map((comment) => (
-              <div key={comment.id} className="flex gap-1 items-center">
-                <span className="text-black font-bold">
-                  {comment.name.split(" ")[0]}
-                </span>
-                <p className="text-gray-900">{comment.body}</p>
+              <div key={comment.id} className="flex gap-1 items-start justify-between">
+                <div className="flex gap-1">
+                  <span className="text-black font-bold">
+                    {comment.name.split(" ")[0]}
+                  </span>
+                  <p className="text-gray-900">{comment.body}</p>
+                </div>
                 <button
                   onClick={() => handleEditComment(comment)}
-                  className="text-blue-500 text-sm"
+                  className="text-gray-600 text-sm pl-1"
                 >
                   Edit
                 </button>
@@ -161,7 +177,7 @@ export default function Comments({ pid }: { pid: number }) {
               />
               <button
                 onClick={handleUpdateComment}
-                className="mt-2 bg-green-500 text-white p-2 rounded"
+                className="mt-2 bg-black text-white p-2 rounded"
               >
                 Update Comment
               </button>
