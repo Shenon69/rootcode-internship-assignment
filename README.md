@@ -15,6 +15,7 @@ Clone the repository to your local machine:
 ```bash
 git clone https://github.com/your-username/rootmedia.git
 cd rootmedia
+```
 
 ## Makefile Commands
 
@@ -26,6 +27,7 @@ To build the Docker image for the project:
 
 ```bash
 make build
+```
 
 ### 2. Run the Docker Container
 
@@ -33,6 +35,7 @@ To run the Docker container:
 
 ```bash
 make run 
+```
 
 ### 3. Show Help
 
@@ -40,5 +43,6 @@ To display the available commands in the `Makefile`:
 
 ```bash
 make help
+```
 This will show you a list of commands and their descriptions.
 
